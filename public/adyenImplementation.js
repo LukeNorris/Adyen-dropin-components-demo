@@ -7,21 +7,39 @@ async function initCheckout() {
     const configuration = {
       paymentMethodsResponse: filterUnimplemented(paymentMethodsResponse),
       clientKey,
-      locale: "en_US",
+      locale: "de_DE",
       environment: "test",
       showPayButton: true,
       paymentMethodsConfiguration: {
         ideal: {
           showImage: true,
         },
+        paypal: {
+          environment: "test", // Change this to "live" when you're ready to accept live PayPal payments
+          countryCode: "NL", // Only needed for test. This will be automatically retrieved when you are in production
+          amount: {
+            currency: "EUR",
+            value: 1000
+          },
+          intent: "authorize",
+
+          onCancel: (data, dropin) => {
+            dropin.setStatus('ready');
+            // Sets your prefered status of the Drop-in component when a PayPal payment is cancelled. In this example, return to the initial state.
+          }
+       },
         card: {
           hasHolderName: true,
           holderNameRequired: true,
+          countryCode: "CH",
           name: "Credit or debit card",
           amount: {
-            value: 1000,
-            currency: "EUR",
+            value: 100,
+            currency: "CH",
           },
+          paymentMethod: {
+            type: 'twint'
+        },
         },
       },
       onSubmit: (state, component) => {
@@ -57,6 +75,8 @@ function filterUnimplemented(pm) {
       "klarna",
       "klarna_account",
       "boletobancario_santander",
+      "twint",
+      "paypal",
     ].includes(it.type)
   );
   return pm;

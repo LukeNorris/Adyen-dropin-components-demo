@@ -26,7 +26,7 @@ dotenv.config({
 // Adyen Node.js API library boilerplate (configuration, etc.)
 const config = new Config();
 config.apiKey = process.env.API_KEY;
-const client = new Client({ config });
+const client = new Client({config});
 client.setEnvironment("TEST");
 const checkout = new CheckoutAPI(client);
 
@@ -101,10 +101,12 @@ app.post("/api/initiatePayment", async (req, res) => {
       deliveryDate: "2023-12-31T23:00:00.000Z",
       shopperStatement: "Aceitar o pagamento até 15 dias após o vencimento.Não cobrar juros. Não aceitar o pagamento com cheque",
       // Below fields are required for Klarna:
-      countryCode: req.body.paymentMethod.type.includes("klarna") ? "DE" : null,
+      // countryCode: req.body.paymentMethod.type.includes("klarna") ? "DE" : null,
+      countryCode: req.body.paymentMethod.type.includes("klarna") ? "CH" : 'CH',
       shopperReference: "12345",
       shopperEmail: "youremail@email.com",
-      shopperLocale: "en_US",
+      // shopperLocale: "en_US",
+      shopperLocale: "ch_CH",
       lineItems: [
         {
           quantity: "1",
@@ -138,6 +140,8 @@ app.post("/api/initiatePayment", async (req, res) => {
     res.status(err.statusCode).json(err.message);
   }
 });
+
+
 
 app.post("/api/submitAdditionalDetails", async (req, res) => {
   // Create the payload for submitting payment details
@@ -239,6 +243,8 @@ function findCurrency(type) {
   switch (type) {
     case "ach":
       return "USD";
+    case "twint":
+      return "CHF"
     case "wechatpayqr":
     case "alipay":
       return "CNY";
